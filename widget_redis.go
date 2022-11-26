@@ -3,7 +3,6 @@ package main
 import (
 	"image"
 	"image/color"
-	"log"
 	"strings"
 	"time"
 	"context"
@@ -88,6 +87,5 @@ func getValue(key string) (string, error) {
 	if err != nil {
 		return strings.TrimSuffix(string("nil"), "\n"), nil
 	}
-	log.Println("key", output)
 	return strings.TrimSuffix(string(output), "\n"), nil
 }
