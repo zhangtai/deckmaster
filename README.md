@@ -89,11 +89,10 @@ WantedBy=multi-user.target
 
 ```ini
 [Unit]
-Description=Deckmaster Service
+Description=StreamDeck
 
 [Service]
-# adjust the path to deckmaster and .deck file to suit your needs
-ExecStart=/usr/local/bin/deckmaster --deck path-to/some.deck
+ExecStart=/usr/local/bin/deckmaster --deck /home/tying/.config/streamdeck/main.toml -sleep 10m
 Restart=on-failure
 ExecReload=kill -HUP $MAINPID
 
