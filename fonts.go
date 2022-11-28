@@ -86,19 +86,19 @@ func loadFont(name string) (*truetype.Font, error) {
 
 func init() {
 	var err error
-	ttfFont, err = loadFont("Roboto-Regular.ttf")
+	ttfFont, err = loadFont("SmileySans-Oblique.ttf")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error loading font:", err)
 		os.Exit(1)
 	}
 
-	ttfThinFont, err = loadFont("Roboto-Thin.ttf")
+	ttfThinFont, err = loadFont("SmileySans-Oblique.ttf")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error loading font:", err)
 		os.Exit(1)
 	}
 
-	ttfBoldFont, err = loadFont("Roboto-Bold.ttf")
+	ttfBoldFont, err = loadFont("SmileySans-Oblique.ttf")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error loading font:", err)
 		os.Exit(1)

@@ -21,6 +21,7 @@ var (
 	// Version contains the application version number. It's set via ldflags
 	// when building.
 	Version = ""
+	UserHome, _ = os.UserHomeDir()
 
 	// CommitSHA contains the SHA of the commit that this application was built
 	// against. It's set via ldflags when building.
@@ -35,7 +36,7 @@ var (
 	xorg          *Xorg
 	recentWindows []Window
 
-	deckFile   = flag.String("deck", "main.deck", "path to deck config file")
+	deckFile   = flag.String("deck", UserHome + "/.config/streamdeck/main.toml", "path to deck config file")
 	device     = flag.String("device", "", "which device to use (serial number)")
 	brightness = flag.Uint("brightness", 80, "brightness in percent")
 	sleep      = flag.String("sleep", "", "sleep timeout")

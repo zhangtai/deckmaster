@@ -8,6 +8,22 @@
 
 An application to control your Elgato Stream Deck on Linux
 
+## Dependencies
+
+On Fedora:
+
+```shell
+sudo dnf -y install hidapi-devel libgudev-devel dbus-x11
+
+# google-roboto-fonts google-noto-sans-cjk-sc-fonts
+# Download Noto CJK fonts in TTF format
+# https://github.com/googlefonts/noto-cjk/releases
+
+curl -LO https://github.com/atelier-anchor/smiley-sans/releases/download/v1.0.0/smiley-sans-v1.0.0.zip
+unzip smiley-sans-v1.0.0.zip
+sudo mv SmileySans-Oblique.ttf /usr/share/fonts
+```
+
 ## Features
 
 - Multiple pages & navigation between decks
