@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"image"
 	"image/color"
+	"log"
 	"strings"
 	"time"
-	"context"
+
 	"github.com/go-redis/redis/v9"
 )
 
@@ -15,10 +17,12 @@ var ctx = context.Background()
 type RedisWidget struct {
 	*BaseWidget
 
-	keys     []string
-	fonts    []string
-	frames   []image.Rectangle
-	colors   []color.Color
+	keys      []string
+	fonts     []string
+	icon_path string
+	icon      image.Image
+	frames    []image.Rectangle
+	colors    []color.Color
 }
 
 // NewRedisWidget returns a new RedisWidget.
@@ -26,8 +30,10 @@ func NewRedisWidget(bw *BaseWidget, opts WidgetConfig) *RedisWidget {
 	bw.setInterval(time.Duration(opts.Interval)*time.Millisecond, time.Second)
 
 	var keys, fonts, frameReps []string
+	var icon_key string
 	_ = ConfigValue(opts.Config["keys"], &keys)
 	_ = ConfigValue(opts.Config["font"], &fonts)
+	_ = ConfigValue(opts.Config["icon_key"], &icon_key)
 	_ = ConfigValue(opts.Config["layout"], &frameReps)
 	var colors []color.Color
 	_ = ConfigValue(opts.Config["color"], &colors)
@@ -44,18 +50,46 @@ func NewRedisWidget(bw *BaseWidget, opts WidgetConfig) *RedisWidget {
 		}
 	}
 
-	return &RedisWidget{
+	w := &RedisWidget{
 		BaseWidget: bw,
 		keys:       keys,
 		fonts:      fonts,
 		frames:     frames,
 		colors:     colors,
 	}
+	if icon_key != "" {
+		log.Println("Reading icon image")
+		icon_path, err := getValue(icon_key)
+		if err != nil {
+			return nil
+		}
+		if err := w.LoadImage(icon_path); err != nil {
+			return nil
+		}
+		w.icon_path = icon_path
+	}
+	return w
+}
+
+func (w *RedisWidget) LoadImage(path string) error {
+	path, err := expandPath(w.base, path)
+	if err != nil {
+		return err
+	}
+	icon, err := loadImage(path)
+	if err != nil {
+		return err
+	}
+
+	w.icon = icon
+	return nil
 }
 
 // Update renders the widget.
 func (w *RedisWidget) Update() error {
 	size := int(w.dev.Pixels)
+	margin := size / 18
+	height := size - (margin * 2)
 	img := image.NewRGBA(image.Rect(0, 0, size, size))
 
 	for i := 0; i < len(w.keys); i++ {
@@ -74,16 +108,28 @@ func (w *RedisWidget) Update() error {
 			w.colors[i],
 			image.Pt(-1, -1))
 	}
+	if w.icon != nil {
+		log.Println("Drawing icon image")
+		err := drawImage(img,
+			w.icon,
+			height,
+			image.Pt(-1, -1))
+
+		if err != nil {
+			return err
+		}
+	}
 	return w.render(w.dev, img)
 }
 
 func getValue(key string) (string, error) {
-    rdb := redis.NewClient(&redis.Options{
-        Addr:     "localhost:6379",
-        Password: "",
-        DB:       0,
-    })
-    output, err := rdb.Get(ctx, key).Result()
+	log.Println("Getting redis key value")
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
+	output, err := rdb.Get(ctx, key).Result()
 	if err != nil {
 		return strings.TrimSuffix(string("nil"), "\n"), nil
 	}
