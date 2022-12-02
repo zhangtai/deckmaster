@@ -81,10 +81,12 @@ func (w *RedisWidget) LoadImage(path string) error {
 	}
 	icon, err := loadImage(path)
 	if err != nil {
-		return err
+		size := int(w.dev.Pixels)
+		w.icon = image.NewRGBA(image.Rect(0, 0, size, size))
+	} else {
+		w.icon = icon
 	}
 
-	w.icon = icon
 	return nil
 }
 
