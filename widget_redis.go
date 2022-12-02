@@ -20,6 +20,7 @@ type RedisWidget struct {
 	keys      []string
 	fonts     []string
 	icon_path string
+	icon_key  string
 	icon      image.Image
 	frames    []image.Rectangle
 	colors    []color.Color
@@ -54,6 +55,7 @@ func NewRedisWidget(bw *BaseWidget, opts WidgetConfig) *RedisWidget {
 		BaseWidget: bw,
 		keys:       keys,
 		fonts:      fonts,
+		icon_key:   icon_key,
 		frames:     frames,
 		colors:     colors,
 	}
@@ -61,12 +63,13 @@ func NewRedisWidget(bw *BaseWidget, opts WidgetConfig) *RedisWidget {
 		log.Println("Reading icon image")
 		icon_path, err := getValue(icon_key)
 		if err != nil {
+			log.Printf("Failed to read icon_path from icon_key: %s", icon_key)
 			return nil
 		}
 		if err := w.LoadImage(icon_path); err != nil {
+			log.Printf("Failed LoadImage: %s", icon_path)
 			return nil
 		}
-		w.icon_path = icon_path
 	}
 	return w
 }
@@ -108,22 +111,35 @@ func (w *RedisWidget) Update() error {
 			w.colors[i],
 			image.Pt(-1, -1))
 	}
-	if w.icon != nil {
-		log.Println("Drawing icon image")
-		err := drawImage(img,
+
+	if w.icon_key != "" {
+		icon_path, err := getValue(w.icon_key)
+		if err != nil {
+			return nil
+		}
+
+		if w.icon_path != icon_path {
+			if err := w.LoadImage(icon_path); err != nil {
+				log.Printf("Failed LoadImage: %s", icon_path)
+				return nil
+			}
+			log.Printf("Setting icon_path to: %s", icon_path)
+			w.icon_path = icon_path
+		}
+
+		drawErr := drawImage(img,
 			w.icon,
 			height,
 			image.Pt(-1, -1))
 
-		if err != nil {
-			return err
+		if drawErr != nil {
+			return drawErr
 		}
 	}
 	return w.render(w.dev, img)
 }
 
 func getValue(key string) (string, error) {
-	log.Println("Getting redis key value")
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
