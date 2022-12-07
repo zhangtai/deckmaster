@@ -7,8 +7,6 @@ import (
 	"log"
 	"strings"
 	"time"
-
-	"github.com/go-redis/redis/v9"
 )
 
 var ctx = context.Background()
@@ -61,7 +59,7 @@ func NewRedisWidget(bw *BaseWidget, opts WidgetConfig) *RedisWidget {
 	}
 	if icon_key != "" {
 		log.Println("Reading icon image")
-		icon_path, err := getValue(icon_key)
+		icon_path, _, err := getValue(icon_key)
 		if err != nil {
 			log.Printf("Failed to read icon_path from icon_key: %s", icon_key)
 			return nil
@@ -98,7 +96,7 @@ func (w *RedisWidget) Update() error {
 	img := image.NewRGBA(image.Rect(0, 0, size, size))
 
 	for i := 0; i < len(w.keys); i++ {
-		str, err := getValue(w.keys[i])
+		str, color, err := getValue(w.keys[i])
 		if err != nil {
 			return err
 		}
@@ -110,12 +108,12 @@ func (w *RedisWidget) Update() error {
 			str,
 			w.dev.DPI,
 			-1,
-			w.colors[i],
+			color,
 			image.Pt(-1, -1))
 	}
 
 	if w.icon_key != "" {
-		icon_path, err := getValue(w.icon_key)
+		icon_path, _, err := getValue(w.icon_key)
 		if err != nil {
 			return nil
 		}
@@ -141,15 +139,10 @@ func (w *RedisWidget) Update() error {
 	return w.render(w.dev, img)
 }
 
-func getValue(key string) (string, error) {
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
-	})
+func getValue(key string) (string, color.Color, error) {
 	output, err := rdb.Get(ctx, key).Result()
 	if err != nil {
-		return strings.TrimSuffix(string("nil"), "\n"), nil
+		return strings.TrimSuffix(string("nil"), "\n"), DefaultColor, nil
 	}
-	return strings.TrimSuffix(string(output), "\n"), nil
+	return strings.TrimSuffix(string(output), "\n"), DefaultColor, nil
 }

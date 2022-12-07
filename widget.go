@@ -13,11 +13,17 @@ import (
 	"github.com/golang/freetype/truetype"
 	"github.com/muesli/streamdeck"
 	"github.com/nfnt/resize"
+	"github.com/go-redis/redis/v9"
 )
 
 var (
 	// DefaultColor is the standard color for text rendering.
 	DefaultColor = color.RGBA{255, 255, 255, 255}
+	rdb = redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
 )
 
 // Widget is an interface implemented by all available widgets.
