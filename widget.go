@@ -136,7 +136,7 @@ func NewWidget(dev *streamdeck.Device, base string, kc KeyConfig, bg image.Image
 	}
 
 	// unknown widget ID
-	return nil, fmt.Errorf("Unknown widget with ID %s", kc.Widget.ID)
+	return nil, fmt.Errorf("unknown widget with ID %s", kc.Widget.ID)
 }
 
 // renders the widget including its background image.

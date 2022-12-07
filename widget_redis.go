@@ -7,6 +7,7 @@ import (
 	"log"
 	"strings"
 	"time"
+	colorful "github.com/lucasb-eyer/go-colorful"
 )
 
 var ctx = context.Background()
@@ -141,6 +142,14 @@ func (w *RedisWidget) Update() error {
 
 func getValue(key string) (string, color.Color, error) {
 	output, err := rdb.Get(ctx, key).Result()
+	coloredText := strings.Split(output, "|")
+	if len(coloredText) >= 2 {
+		c, err := colorful.Hex(coloredText[1])
+		if err != nil {
+			log.Fatal(err)
+		}
+		return strings.TrimSuffix(string(coloredText[0]), "\n"), c, nil
+	}
 	if err != nil {
 		return strings.TrimSuffix(string("nil"), "\n"), DefaultColor, nil
 	}
