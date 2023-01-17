@@ -22,7 +22,12 @@ sudo dnf -y install hidapi-devel libgudev-devel dbus-x11
 curl -LO https://github.com/atelier-anchor/smiley-sans/releases/download/v1.0.0/smiley-sans-v1.0.0.zip
 unzip smiley-sans-v1.0.0.zip
 sudo mv SmileySans-Oblique.ttf /usr/share/fonts
+
+# Create rules as per the deckmaster repo(below), and
+sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
+
+Create systemd service file(as ./streamdeck.service) at `$HOME/.config/systemd/user`
 
 ## Features
 
@@ -32,17 +37,17 @@ sudo mv SmileySans-Oblique.ttf /usr/share/fonts
 - Brightness control
 - Supports different actions for short & long presses
 - Comes with a collection of widgets:
-    - Buttons
-    - Time (with formatting)
-    - CPU/Mem usage
-    - Weather
-    - Command output
-    - Recently used windows (X11-only)
+  - Buttons
+  - Time (with formatting)
+  - CPU/Mem usage
+  - Weather
+  - Command output
+  - Recently used windows (X11-only)
 - Lets you trigger several actions:
-    - Run commands
-    - Emulate a key-press
-    - Paste to clipboard
-    - Trigger a dbus call
+  - Run commands
+  - Emulate a key-press
+  - Paste to clipboard
+  - Trigger a dbus call
 
 ## Installation
 
@@ -413,5 +418,5 @@ Made your own useful decks? Submit a pull request!
 
 Got some feedback or suggestions? Please open an issue or drop me a note!
 
-* [Twitter](https://twitter.com/mueslix)
-* [The Fediverse](https://mastodon.social/@fribbledom)
+- [Twitter](https://twitter.com/mueslix)
+- [The Fediverse](https://mastodon.social/@fribbledom)
