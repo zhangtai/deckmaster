@@ -1,0 +1,12 @@
+[Unit]
+Description=StreamDeck for user %i
+
+[Service]
+WorkingDirectory=/home/%i/.config/streamdeck
+ExecStart=/usr/local/bin/deckmaster -sleep 10m -verbose -deck main.toml
+Restart=on-failure
+User=%i
+ExecReload=kill -HUP $MAINPID
+
+[Install]
+WantedBy=default.target

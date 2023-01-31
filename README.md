@@ -27,7 +27,7 @@ sudo mv SmileySans-Oblique.ttf /usr/share/fonts
 sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
 
-Create systemd service file(as ./streamdeck.service) at `$HOME/.config/systemd/user`
+`sudo cp ./streamdeck@.service /etc/systemd/system`
 
 ## Features
 
